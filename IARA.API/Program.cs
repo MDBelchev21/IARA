@@ -77,6 +77,11 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFishingPermitService, FishingPermitService>();
+builder.Services.AddScoped<IFishingTripService, FishingTripService>();
+builder.Services.AddScoped<ILandingService, LandingService>();
+builder.Services.AddScoped<ILandingLineService, LandingLineService>();
+builder.Services.AddScoped<ITransportDocumentService, TransportDocumentService>();
+builder.Services.AddScoped<ITransportLineService, TransportLineService>();
 
 builder.Services.AddScoped<IRecreationalFishermanService, RecreationalFishermanService>();
 builder.Services.AddScoped<IRecreationalTicketService, RecreationalTicketService>();
