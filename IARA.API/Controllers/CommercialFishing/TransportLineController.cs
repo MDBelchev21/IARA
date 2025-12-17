@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IARA.API.Controllers.CommercialFishing;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [Authorize]
 public class TransportLineController : ControllerBase
 {
@@ -64,4 +64,3 @@ public class TransportLineController : ControllerBase
         return Ok(success);
     }
 }
-

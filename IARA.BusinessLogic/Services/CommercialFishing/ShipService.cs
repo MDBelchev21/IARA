@@ -37,19 +37,21 @@ public class ShipService : BaseService, IShipService
 
     public async Task<int> AddAsync(ShipRequestDTO ship)
     {
+        ValidateDimensions(ship);
+
         Ship entity = new Ship()
         {
             InternationalNumber = ship.InternationalNumber,
             RadioCallSign = ship.RadioCallSign,
             ExternalMarking = ship.ExternalMarking,
             Name = ship.Name,
-            Length = ship.Length,
-            Width = ship.Width,
-            GrossTonnage = ship.GrossTonnage,
-            Draft = ship.Draft,
-            MainEnginePower = ship.MainEnginePower,
+            Length = decimal.Round(ship.Length, 2, MidpointRounding.AwayFromZero),
+            Width = decimal.Round(ship.Width, 2, MidpointRounding.AwayFromZero),
+            GrossTonnage = ship.GrossTonnage.HasValue ? decimal.Round(ship.GrossTonnage.Value, 2, MidpointRounding.AwayFromZero) : null,
+            Draft = ship.Draft.HasValue ? decimal.Round(ship.Draft.Value, 2, MidpointRounding.AwayFromZero) : null,
+            MainEnginePower = ship.MainEnginePower.HasValue ? decimal.Round(ship.MainEnginePower.Value, 2, MidpointRounding.AwayFromZero) : null,
             FuelType = ship.FuelType,
-            FuelCapacity = ship.FuelCapacity,
+            FuelCapacity = ship.FuelCapacity.HasValue ? decimal.Round(ship.FuelCapacity.Value, 2, MidpointRounding.AwayFromZero) : null,
             IsDeleted = false
         };
 
@@ -77,6 +79,8 @@ public class ShipService : BaseService, IShipService
             throw new ArgumentException("ShipId is required for edit operation");
         }
 
+        ValidateDimensions(ship);
+
         Ship entity = await GetAllFromDatabase()
             .Where(s => s.ShipId == ship.ShipId.Value)
             .SingleAsync();
@@ -85,13 +89,13 @@ public class ShipService : BaseService, IShipService
         entity.RadioCallSign = ship.RadioCallSign;
         entity.ExternalMarking = ship.ExternalMarking;
         entity.Name = ship.Name;
-        entity.Length = ship.Length;
-        entity.Width = ship.Width;
-        entity.GrossTonnage = ship.GrossTonnage;
-        entity.Draft = ship.Draft;
-        entity.MainEnginePower = ship.MainEnginePower;
+        entity.Length = decimal.Round(ship.Length, 2, MidpointRounding.AwayFromZero);
+        entity.Width = decimal.Round(ship.Width, 2, MidpointRounding.AwayFromZero);
+        entity.GrossTonnage = ship.GrossTonnage.HasValue ? decimal.Round(ship.GrossTonnage.Value, 2, MidpointRounding.AwayFromZero) : null;
+        entity.Draft = ship.Draft.HasValue ? decimal.Round(ship.Draft.Value, 2, MidpointRounding.AwayFromZero) : null;
+        entity.MainEnginePower = ship.MainEnginePower.HasValue ? decimal.Round(ship.MainEnginePower.Value, 2, MidpointRounding.AwayFromZero) : null;
         entity.FuelType = ship.FuelType;
-        entity.FuelCapacity = ship.FuelCapacity;
+        entity.FuelCapacity = ship.FuelCapacity.HasValue ? decimal.Round(ship.FuelCapacity.Value, 2, MidpointRounding.AwayFromZero) : null;
 
         return await Db.SaveChangesAsync() > 0;
     }
@@ -101,6 +105,30 @@ public class ShipService : BaseService, IShipService
         var ship = await GetAllFromDatabase().Where(s => s.ShipId == id).SingleAsync();
         ship.IsDeleted = true;
         return await Db.SaveChangesAsync() > 0;
+    }
+
+    private static void ValidateDimensions(ShipRequestDTO ship)
+    {
+        if (ship.Length <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ship.Length), "Length must be greater than 0.");
+        }
+        if (ship.Width <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ship.Width), "Width must be greater than 0.");
+        }
+        if (ship.Draft.HasValue && ship.Draft.Value < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ship.Draft), "Draft cannot be negative.");
+        }
+        if (ship.MainEnginePower.HasValue && ship.MainEnginePower.Value < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ship.MainEnginePower), "Engine power cannot be negative.");
+        }
+        if (ship.FuelCapacity.HasValue && ship.FuelCapacity.Value < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(ship.FuelCapacity), "Fuel capacity cannot be negative.");
+        }
     }
 
     private IQueryable<Ship> ApplyPagination(IQueryable<Ship> query, int page, int pageSize)
@@ -184,4 +212,3 @@ public class ShipService : BaseService, IShipService
         return Db.Ships.AsQueryable();
     }
 }
-

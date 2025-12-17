@@ -74,6 +74,10 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IAdministratorService, AdministratorService>();
+builder.Services.AddScoped<IInspectorService, InspectorService>();
+builder.Services.AddScoped<IShipOwnerService, ShipOwnerService>();
+builder.Services.AddScoped<ILegalEntityService, LegalEntityService>();
 
 builder.Services.AddScoped<IShipService, ShipService>();
 builder.Services.AddScoped<IFishingPermitService, FishingPermitService>();
@@ -85,6 +89,10 @@ builder.Services.AddScoped<ITransportLineService, TransportLineService>();
 
 builder.Services.AddScoped<IRecreationalFishermanService, RecreationalFishermanService>();
 builder.Services.AddScoped<IRecreationalTicketService, RecreationalTicketService>();
+builder.Services.AddScoped<IRecreationalCatchService, RecreationalCatchService>();
+builder.Services.AddScoped<IRecreationalTicketTypeService, RecreationalTicketTypeService>();
+builder.Services.AddScoped<IQualificationService, QualificationService>();
+builder.Services.AddScoped<IShipCrewService, ShipCrewService>();
 
 builder.Services.AddScoped<IInspectionService, InspectionService>();
 builder.Services.AddScoped<IViolationService, ViolationService>();

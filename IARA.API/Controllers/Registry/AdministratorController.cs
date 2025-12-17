@@ -1,4 +1,4 @@
-using IARA.DomainModel;
+﻿using IARA.DomainModel;
 using IARA.DomainModel.DTOs.Registry;
 using IARA.DomainModel.Filters.Registry;
 using IARA.Infrastructure.Interfaces.Registry;
@@ -9,29 +9,27 @@ namespace IARA.API.Controllers.Registry;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize]
-public class PersonController : ControllerBase
+[Authorize(Policy = "Administrator")]
+public class AdministratorController : ControllerBase
 {
-    private readonly IPersonService _personService;
+    private readonly IAdministratorService _administratorService;
 
-    public PersonController(IPersonService personService)
+    public AdministratorController(IAdministratorService administratorService)
     {
-        _personService = personService;
+        _administratorService = administratorService;
     }
 
     [HttpPost("getall")]
-    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<IEnumerable<PersonResponseDTO>>> GetAll([FromBody] BaseFilter<PersonFilter> filters)
     {
-        var result = await _personService.GetAllAsync(filters);
+        var result = await _administratorService.GetAllAsync(filters);
         return Ok(result);
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<PersonResponseDTO>> Get(int id)
     {
-        var result = await _personService.GetAsync(id);
+        var result = await _administratorService.GetAsync(id);
         if (result == null)
         {
             return NotFound();
@@ -40,26 +38,16 @@ public class PersonController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<int>> Add([FromBody] PersonRequestDTO person)
     {
-        var id = await _personService.AddAsync(person);
+        var id = await _administratorService.AddAsync(person);
         return CreatedAtAction(nameof(Get), new { id }, id);
     }
 
-    [HttpPut]
-    [Authorize(Policy = "Administrator")]
-    public async Task<ActionResult<bool>> Edit([FromBody] PersonRequestDTO person)
-    {
-        var result = await _personService.EditAsync(person);
-        return Ok(result);
-    }
-
     [HttpDelete("{id}")]
-    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
-        var result = await _personService.DeleteAsync(id);
+        var result = await _administratorService.DeleteAsync(id);
         return Ok(result);
     }
 }

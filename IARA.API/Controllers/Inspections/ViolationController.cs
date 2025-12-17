@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IARA.API.Controllers.Inspections;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [Authorize(Policy = "Inspector")]
 public class ViolationController : ControllerBase
 {

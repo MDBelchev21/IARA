@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IARA.API.Controllers.RecreationalFishing;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 [Authorize]
 public class RecreationalTicketController : ControllerBase
 {
