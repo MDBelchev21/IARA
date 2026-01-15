@@ -28,7 +28,7 @@ public class AuthService : BaseService, IAuthService
 
         string role = await DetermineUserRole(person.PersonId);
 
-        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email, role);
+        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email ?? String.Empty, role);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         person.RefreshToken = refreshToken;
@@ -41,7 +41,7 @@ public class AuthService : BaseService, IAuthService
             RefreshToken = refreshToken,
             ExpiresAt = DateTime.UtcNow.AddHours(1),
             UserName = $"{person.FirstName} {person.LastName}",
-            Email = person.Email,
+            Email = person.Email ?? string.Empty,
             Role = role,
             UserId = person.PersonId
         };
@@ -114,7 +114,7 @@ public class AuthService : BaseService, IAuthService
 
         string role = await DetermineUserRole(person.PersonId);
 
-        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email, role);
+        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email ?? string.Empty, role);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         person.RefreshToken = refreshToken;
@@ -127,7 +127,7 @@ public class AuthService : BaseService, IAuthService
             RefreshToken = refreshToken,
             ExpiresAt = DateTime.UtcNow.AddHours(1),
             UserName = $"{person.FirstName} {person.LastName}",
-            Email = person.Email,
+            Email = person.Email ?? string.Empty,
             Role = role,
             UserId = person.PersonId
         };
@@ -165,10 +165,6 @@ public class AuthService : BaseService, IAuthService
         if (isShipOwner)
             return "ShipOwner";
 
-        var isCaptain = await Db.ShipCrews.AnyAsync(sc => sc.PersonId == personId && sc.IsCaptain && sc.IsActive);
-        if (isCaptain)
-            return "Captain";
-
         var isRecFisherman = await Db.RecreationalFishermen.AnyAsync(rf => rf.PersonId == personId);
         if (isRecFisherman)
             return "RecreationalFisherman";
@@ -193,5 +189,4 @@ public class AuthService : BaseService, IAuthService
         return hash == storedHash;
     }
 }
-
 
