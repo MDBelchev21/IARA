@@ -439,3 +439,42 @@ VALUES (N'20251215210001_Test', N'9.0.11');
 COMMIT;
 GO
 
+-- SHA256 hash of "Test1!" (Base64 encoded): DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=
+-- 1. Administrator Account
+INSERT INTO [Persons] (FirstName, MiddleName, LastName, EGN, Email, Phone, Address, PasswordHash, CreatedOn, IsDeleted)
+VALUES ('Admin', 'Test', 'User', '1234567890', 'admin@test.com', '0888111111', 'Admin Street 1', 'DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=', GETDATE(), 0);
+
+INSERT INTO [Administrators] (PersonId, DisplayName, CreatedOn)
+VALUES (SCOPE_IDENTITY(), 'Admin Test User', GETDATE());
+
+-- 2. Inspector Account
+INSERT INTO [Persons] (FirstName, MiddleName, LastName, EGN, Email, Phone, Address, PasswordHash, CreatedOn, IsDeleted)
+VALUES ('Inspector', 'Test', 'User', '2234567890', 'inspector@test.com', '0888222222', 'Inspector Street 2', 'DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=', GETDATE(), 0);
+
+INSERT INTO [Inspectors] (PersonId, BadgeNumber, IsActive)
+VALUES (SCOPE_IDENTITY(), 'INSP-001', 1);
+
+-- 3. Ship Owner Account
+INSERT INTO [Persons] (FirstName, MiddleName, LastName, EGN, Email, Phone, Address, PasswordHash, CreatedOn, IsDeleted)
+VALUES ('ShipOwner', 'Test', 'User', '3234567890', 'shipowner@test.com', '0888333333', 'ShipOwner Street 3', 'DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=', GETDATE(), 0);
+
+INSERT INTO [ShipOwners] (ShipId, PersonId, LegalEntityId, OwnershipShare, ValidFrom, IsActive)
+VALUES (1, SCOPE_IDENTITY(), NULL, 100.00, GETDATE(), 1);
+
+-- 4. Captain Account (create ship first, then person and crew)
+INSERT INTO [Ships] (ExternalMarking, Name, Length, Width, GrossTonnage, IsDeleted)
+VALUES ('CAP-001', 'Captain Test Ship', 15.5, 4.2, 25.0, 0);
+
+INSERT INTO [Persons] (FirstName, MiddleName, LastName, EGN, Email, Phone, Address, PasswordHash, CreatedOn, IsDeleted)
+VALUES ('Captain', 'Test', 'User', '4234567890', 'captain@test.com', '0888444444', 'Captain Street 4', 'DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=', GETDATE(), 0);
+
+INSERT INTO [ShipCrew] (ShipId, PersonId, Position, IsCaptain, AssignedOn, IsActive)
+VALUES ((SELECT TOP 1 ShipId FROM Ships WHERE ExternalMarking = 'CAP-001'), SCOPE_IDENTITY(), 'Captain', 1, GETDATE(), 1);
+
+-- 5. Recreational Fisherman Account
+INSERT INTO [Persons] (FirstName, MiddleName, LastName, EGN, Email, Phone, Address, PasswordHash, CreatedOn, IsDeleted)
+VALUES ('Fisherman', 'Test', 'User', '5234567890', 'fisherman@test.com', '0888555555', 'Fisherman Street 5', 'DjJG3IaapmAWOxhvvwAjk9JAXzImYDQdLGZv0Mg2IUM=', GETDATE(), 0);
+
+INSERT INTO [RecreationalFishermen] (PersonId)
+VALUES (SCOPE_IDENTITY());
+

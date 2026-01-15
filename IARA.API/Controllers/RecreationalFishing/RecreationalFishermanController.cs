@@ -19,7 +19,7 @@ public class RecreationalFishermanController : ControllerBase
         _fishermanService = fishermanService;
     }
 
-    [HttpPost("getall")]
+    [HttpPost]
     [Authorize(Policy = "Inspector")]
     public async Task<ActionResult<IEnumerable<RecreationalFishermanResponseDTO>>> GetAll([FromBody] BaseFilter<RecreationalFishermanFilter> filters)
     {
@@ -32,6 +32,18 @@ public class RecreationalFishermanController : ControllerBase
     public async Task<ActionResult<RecreationalFishermanResponseDTO>> Get(int id)
     {
         var result = await _fishermanService.GetAsync(id);
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
+    }
+
+    [HttpGet("{personId}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<int>> GetByPersonId(int personId)
+    {
+        var result = await _fishermanService.GetByPersonIdAsync(personId);
         if (result == null)
         {
             return NotFound();

@@ -9,13 +9,13 @@ namespace IARA.API.Controllers.RecreationalFishing;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-[Authorize(Policy = "Administrator")]
 public class RecreationalTicketTypeController : ControllerBase
 {
     private readonly IRecreationalTicketTypeService _service;
     public RecreationalTicketTypeController(IRecreationalTicketTypeService service) { _service = service; }
 
-    [HttpPost("getall")]
+    [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<RecreationalTicketTypeResponseDTO>>> GetAll([FromBody] BaseFilter<RecreationalTicketTypeFilter> filters)
     {
         var result = await _service.GetAllAsync(filters);
@@ -23,6 +23,7 @@ public class RecreationalTicketTypeController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<RecreationalTicketTypeResponseDTO>> Get(int id)
     {
         var result = await _service.GetAsync(id);
@@ -31,6 +32,7 @@ public class RecreationalTicketTypeController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<int>> Add([FromBody] RecreationalTicketTypeRequestDTO request)
     {
         var id = await _service.AddAsync(request);
@@ -38,6 +40,7 @@ public class RecreationalTicketTypeController : ControllerBase
     }
 
     [HttpPut]
+    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<bool>> Edit([FromBody] RecreationalTicketTypeRequestDTO request)
     {
         var result = await _service.EditAsync(request);
@@ -45,6 +48,7 @@ public class RecreationalTicketTypeController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "Administrator")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
         var result = await _service.DeleteAsync(id);

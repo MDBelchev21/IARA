@@ -15,8 +15,8 @@ public class RecreationalCatchController : ControllerBase
     private readonly IRecreationalCatchService _catchService;
     public RecreationalCatchController(IRecreationalCatchService catchService) { _catchService = catchService; }
 
-    [HttpPost("getall")]
-    [Authorize(Policy = "Inspector")]
+    [HttpPost]
+    [Authorize(Policy = "RecreationalFisherman")]
     public async Task<ActionResult<IEnumerable<RecreationalCatchResponseDTO>>> GetAll([FromBody] BaseFilter<RecreationalCatchFilter> filters)
     {
         var result = await _catchService.GetAllAsync(filters);

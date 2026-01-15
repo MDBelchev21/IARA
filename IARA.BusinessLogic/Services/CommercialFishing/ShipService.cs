@@ -39,6 +39,16 @@ public class ShipService : BaseService, IShipService
     {
         ValidateDimensions(ship);
 
+        // Check if ExternalMarking already exists
+        var existingShip = await Db.Ships
+            .Where(s => s.ExternalMarking == ship.ExternalMarking && !s.IsDeleted)
+            .FirstOrDefaultAsync();
+
+        if (existingShip != null)
+        {
+            throw new InvalidOperationException($"A ship with external marking '{ship.ExternalMarking}' already exists.");
+        }
+
         Ship entity = new Ship()
         {
             InternationalNumber = ship.InternationalNumber,

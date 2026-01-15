@@ -71,7 +71,16 @@ public class AuthService : BaseService, IAuthService
         Db.Persons.Add(person);
         await Db.SaveChangesAsync();
 
-        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email, "User");
+        // Automatically create a RecreationalFisherman record for the new user
+        var recFisherman = new RecreationalFisherman
+        {
+            PersonId = person.PersonId,
+            IsDisabled = false
+        };
+        Db.RecreationalFishermen.Add(recFisherman);
+        await Db.SaveChangesAsync();
+
+        var accessToken = _tokenService.GenerateAccessToken(person.PersonId, person.Email, "RecreationalFisherman");
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         person.RefreshToken = refreshToken;
@@ -85,7 +94,7 @@ public class AuthService : BaseService, IAuthService
             ExpiresAt = DateTime.UtcNow.AddHours(1),
             UserName = $"{person.FirstName} {person.LastName}",
             Email = person.Email,
-            Role = "User",
+            Role = "RecreationalFisherman",
             UserId = person.PersonId
         };
     }
@@ -156,6 +165,10 @@ public class AuthService : BaseService, IAuthService
         if (isShipOwner)
             return "ShipOwner";
 
+        var isCaptain = await Db.ShipCrews.AnyAsync(sc => sc.PersonId == personId && sc.IsCaptain && sc.IsActive);
+        if (isCaptain)
+            return "Captain";
+
         var isRecFisherman = await Db.RecreationalFishermen.AnyAsync(rf => rf.PersonId == personId);
         if (isRecFisherman)
             return "RecreationalFisherman";
@@ -180,4 +193,5 @@ public class AuthService : BaseService, IAuthService
         return hash == storedHash;
     }
 }
+
 

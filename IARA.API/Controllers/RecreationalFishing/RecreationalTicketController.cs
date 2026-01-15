@@ -19,8 +19,8 @@ public class RecreationalTicketController : ControllerBase
         _ticketService = ticketService;
     }
 
-    [HttpPost("getall")]
-    [Authorize(Policy = "Inspector")]
+    [HttpPost]
+    [Authorize(Policy = "RecreationalFisherman")]
     public async Task<ActionResult<IEnumerable<RecreationalTicketResponseDTO>>> GetAll([FromBody] BaseFilter<RecreationalTicketFilter> filters)
     {
         var result = await _ticketService.GetAllAsync(filters);

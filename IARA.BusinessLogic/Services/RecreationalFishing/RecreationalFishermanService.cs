@@ -35,6 +35,15 @@ public class RecreationalFishermanService : BaseService, IRecreationalFishermanS
         return await ApplyMapping(GetAllFromDatabase().Where(f => f.RecFishermanId == id)).FirstOrDefaultAsync();
     }
 
+    public async Task<int?> GetByPersonIdAsync(int personId)
+    {
+        var fisherman = await Db.RecreationalFishermen
+            .Where(f => f.PersonId == personId)
+            .FirstOrDefaultAsync();
+        
+        return fisherman?.RecFishermanId;
+    }
+
     public async Task<int> AddAsync(RecreationalFishermanRequestDTO fisherman)
     {
         RecreationalFisherman entity = new RecreationalFisherman()

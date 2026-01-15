@@ -27,6 +27,17 @@ if (File.Exists(envPath))
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddOpenApi();
 
 var envConn = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
@@ -67,6 +78,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Administrator", policy => policy.RequireRole("Administrator"));
     options.AddPolicy("Inspector", policy => policy.RequireRole("Inspector", "Administrator"));
     options.AddPolicy("ShipOwner", policy => policy.RequireRole("ShipOwner", "Administrator"));
+    options.AddPolicy("ShipOwnerOrInspector", policy => policy.RequireRole("ShipOwner", "Inspector", "Administrator"));
     options.AddPolicy("RecreationalFisherman", policy => policy.RequireRole("RecreationalFisherman", "User", "Administrator"));
 });
 
@@ -80,6 +92,7 @@ builder.Services.AddScoped<IShipOwnerService, ShipOwnerService>();
 builder.Services.AddScoped<ILegalEntityService, LegalEntityService>();
 
 builder.Services.AddScoped<IShipService, ShipService>();
+builder.Services.AddScoped<IShipEquipmentService, ShipEquipmentService>();
 builder.Services.AddScoped<IFishingPermitService, FishingPermitService>();
 builder.Services.AddScoped<IFishingTripService, FishingTripService>();
 builder.Services.AddScoped<ILandingService, LandingService>();
@@ -134,6 +147,13 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Seed database
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<IARADbContext>();
+    await DbSeeder.SeedAsync(context);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -142,6 +162,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -19,8 +19,8 @@ public class ShipController : ControllerBase
         _shipService = shipService;
     }
 
-    [HttpPost("getall")]
-    [Authorize(Policy = "Inspector")]
+    [HttpPost]
+    [Authorize(Policy = "ShipOwnerOrInspector")]
     public async Task<ActionResult<IEnumerable<ShipResponseDTO>>> GetAll([FromBody] BaseFilter<ShipFilter> filters)
     {
         var result = await _shipService.GetAllAsync(filters);
@@ -28,7 +28,7 @@ public class ShipController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Policy = "Inspector")]
+    [Authorize(Policy = "ShipOwnerOrInspector")]
     public async Task<ActionResult<ShipResponseDTO>> Get(int id)
     {
         var result = await _shipService.GetAsync(id);
@@ -40,7 +40,7 @@ public class ShipController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "Administrator")]
+    [Authorize(Policy = "ShipOwner")]
     public async Task<ActionResult<int>> Add([FromBody] ShipRequestDTO ship)
     {
         var id = await _shipService.AddAsync(ship);
@@ -56,7 +56,7 @@ public class ShipController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "Administrator")]
+    [Authorize(Policy = "ShipOwner")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
         var result = await _shipService.DeleteAsync(id);
